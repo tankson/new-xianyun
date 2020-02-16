@@ -39,6 +39,20 @@
 <script>
 export default {
     data(){
+          const validateUsername = (rule, value, callback) => {
+
+            // 通过value校验到底是否是手机号码, true的话表示通过，false就不通过
+            const isValid = /^1[3-9][0-9]{9}$/.test(value);
+
+            // 不是手机号码报错
+            if(!isValid){
+                callback(new Error("手机号码格式错误"))
+            }else{
+                // 通过
+                callback();
+            }
+        };
+
         return {
             // 表单数据
             form: {
@@ -64,10 +78,22 @@ export default {
             },
         }
     },
+    // 提交登录
     methods: {
-        // 提交登录
         handleLoginSubmit(){
-           console.log(this.form)
+            // 验证表单
+            this.$refs['form'].validate((valid)=>{
+                // 为true表示没有错误
+                if(valid){
+                    this.$axios({
+                        url: "/accounts/login",
+                        method: "POST",
+                        data: this.form
+                    }).then(res=>{
+                        console.log(res.data);
+                    })
+                }
+            })
         }
     }
 }
